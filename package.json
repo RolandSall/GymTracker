@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "backend:dev": "cd apps/backend && npm run start:dev",
+    "backend:dev": "nx serve backend",
     "docker:up": "docker-compose up",
     "docker:down": "docker-compose down",
     "docker:build": "docker-compose build"

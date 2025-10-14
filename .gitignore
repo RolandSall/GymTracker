@@ -4,6 +4,8 @@
 dist
 tmp
 out-tsc
+build
+*.tsbuildinfo
 
 # dependencies
 node_modules
@@ -33,6 +35,52 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.test
+*.env
+
+# Logs
+logs/
+*.log
+pnpm-debug.log*
+lerna-debug.log*
+
+# Docker
+docker-compose.override.yml
+
+# Secrets and credentials
+*.pem
+*.key
+*.cert
+*.crt
+secrets/
+credentials.json
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+
+# Testing
+.nyc_output/
+junit.xml
+
+# Temporary files
+temp/
+*.tmp
+*.swp
+*.swo
+*~
+
+# Application specific
+uploads/
 
 # System Files
 .DS_Store

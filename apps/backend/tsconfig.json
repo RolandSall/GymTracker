@@ -20,5 +20,14 @@
     "moduleResolution": "node"
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.spec.ts"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.spec.ts"
+  ],
+  "references": [
+    {
+      "path": "../../libs/nest-mediator"
+    }
+  ]
 }

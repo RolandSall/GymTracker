@@ -6,3 +6,10 @@ Content-Type: application/json
   "name": "Strength Training",
   "description": "Exercises focused on building muscle strength and power"
 }
+
+###
+
+### Get Category by ID
+GET http://localhost:3000/api/categories/bad943de-2eb4-4d9d-94cf-81627f75c65b
+
+###

@@ -14,7 +14,7 @@ A lightweight CQRS (Command Query Responsibility Segregation) mediator pattern i
 ## Installation
 
 ```bash
-npm install @rolandsall/nest-mediator
+npm install @rolandsall24/nest-mediator
 ```
 
 ## Quick Start
@@ -25,7 +25,7 @@ Import `NestMediatorModule` in your application module and register your handler
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { NestMediatorModule } from '@rolandsall/nest-mediator';
+import { NestMediatorModule } from '@rolandsall24/nest-mediator';
 import { CreateUserCommandHandler } from './handlers/create-user.handler';
 import { GetUserQueryHandler } from './handlers/get-user-query.handler';
 
@@ -61,7 +61,7 @@ Commands are used for operations that change state (create, update, delete).
 #### 1. Define a Command
 
 ```typescript
-import { ICommand } from '@rolandsall/nest-mediator';
+import { ICommand } from '@rolandsall24/nest-mediator';
 
 export class CreateUserCommand implements ICommand {
   constructor(
@@ -76,7 +76,7 @@ export class CreateUserCommand implements ICommand {
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { CommandHandler, ICommandHandler } from '@rolandsall/nest-mediator';
+import { CommandHandler, ICommandHandler } from '@rolandsall24/nest-mediator';
 import { CreateUserCommand } from '../commands/create-user.command';
 
 @Injectable()
@@ -105,7 +105,7 @@ export class CreateUserCommandHandler implements ICommandHandler<CreateUserComma
 
 ```typescript
 import { Controller, Post, Body } from '@nestjs/common';
-import { MediatorService } from '@rolandsall/nest-mediator';
+import { MediatorService } from '@rolandsall24/nest-mediator';
 import { CreateUserCommand } from './commands/create-user.command';
 
 @Controller('users')
@@ -132,7 +132,7 @@ Queries are used for operations that read data without changing state.
 #### 1. Define a Query
 
 ```typescript
-import { IQuery } from '@rolandsall/nest-mediator';
+import { IQuery } from '@rolandsall24/nest-mediator';
 
 export class GetUserByIdQuery implements IQuery {
   constructor(public readonly userId: string) {}
@@ -155,7 +155,7 @@ export interface UserDto {
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { QueryHandler, IQueryHandler } from '@rolandsall/nest-mediator';
+import { QueryHandler, IQueryHandler } from '@rolandsall24/nest-mediator';
 import { GetUserByIdQuery } from '../queries/get-user-by-id.query';
 import { UserDto } from '../dtos/user.dto';
 
@@ -190,7 +190,7 @@ export class GetUserByIdQueryHandler implements IQueryHandler<GetUserByIdQuery, 
 
 ```typescript
 import { Controller, Get, Param } from '@nestjs/common';
-import { MediatorService } from '@rolandsall/nest-mediator';
+import { MediatorService } from '@rolandsall24/nest-mediator';
 import { GetUserByIdQuery } from './queries/get-user-by-id.query';
 import { UserDto } from './dtos/user.dto';
 
@@ -302,7 +302,7 @@ export class UserNotFoundException extends DomainException {
 #### application/user/create-user.command.ts
 
 ```typescript
-import { ICommand } from '@rolandsall/nest-mediator';
+import { ICommand } from '@rolandsall24/nest-mediator';
 
 export class CreateUserCommand implements ICommand {
   constructor(
@@ -330,7 +330,7 @@ export const USER_PERSISTOR = Symbol('USER_PERSISTOR');
 
 ```typescript
 import { Injectable, Inject } from '@nestjs/common';
-import { CommandHandler, ICommandHandler } from '@rolandsall/nest-mediator';
+import { CommandHandler, ICommandHandler } from '@rolandsall24/nest-mediator';
 import { randomUUID } from 'crypto';
 import { CreateUserCommand } from './create-user.command';
 import { User } from '../../domain/entities/user';
@@ -362,7 +362,7 @@ export class CreateUserCommandHandler implements ICommandHandler<CreateUserComma
 #### application/user/get-user.query.ts
 
 ```typescript
-import { IQuery } from '@rolandsall/nest-mediator';
+import { IQuery } from '@rolandsall24/nest-mediator';
 
 export class GetUserQuery implements IQuery {
   constructor(public readonly id: string) {}
@@ -373,7 +373,7 @@ export class GetUserQuery implements IQuery {
 
 ```typescript
 import { Injectable, Inject } from '@nestjs/common';
-import { QueryHandler, IQueryHandler } from '@rolandsall/nest-mediator';
+import { QueryHandler, IQueryHandler } from '@rolandsall24/nest-mediator';
 import { GetUserQuery } from './get-user.query';
 import { User } from '../../domain/entities/user';
 import { UserNotFoundException } from '../../domain/exceptions/user-not-found.exception';
@@ -452,7 +452,7 @@ export class UserApiResponse {
 
 ```typescript
 import { Controller, Post, Body, Get, Param } from '@nestjs/common';
-import { MediatorService } from '@rolandsall/nest-mediator';
+import { MediatorService } from '@rolandsall24/nest-mediator';
 import { CreateUserCommand } from '../../application/user/create-user.command';
 import { GetUserQuery } from '../../application/user/get-user.query';
 import { CreateUserApiRequest } from './create-user-api.request';
@@ -495,7 +495,7 @@ export class UserController {
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { NestMediatorModule } from '@rolandsall/nest-mediator';
+import { NestMediatorModule } from '@rolandsall24/nest-mediator';
 import { UserController } from './presentation/user/user.controller';
 import { CreateUserCommandHandler } from './application/user/create-user.handler';
 import { GetUserQueryHandler } from './application/user/get-user.handler';

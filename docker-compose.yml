@@ -1,6 +1,26 @@
 version: '3.8'
 
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: gym-tracker-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=gym_tracker
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - gym-tracker-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: .
@@ -11,9 +31,16 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/gym_tracker
     networks:
       - gym-tracker-network
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
 
 networks:
   gym-tracker-network:

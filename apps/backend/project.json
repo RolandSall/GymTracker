@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/backend/src",
+  "sourceRoot": "apps/backend",
   "projectType": "application",
   "targets": {
     "build": {
@@ -9,9 +9,9 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/backend",
-        "main": "apps/backend/src/main.ts",
+        "main": "apps/backend/main.ts",
         "tsConfig": "apps/backend/tsconfig.json",
-        "assets": ["apps/backend/src/assets"]
+        "assets": []
       },
       "configurations": {
         "production": {

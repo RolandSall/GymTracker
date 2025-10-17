@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "backend:dev": "nx run-many --target=build --projects=nest-mediator && nx serve backend --skip-nx-cache",
+    "backend:dev": "nx serve backend",
     "docker:up": "docker-compose up",
     "docker:down": "docker-compose down",
     "docker:build": "docker-compose build",
@@ -33,8 +33,7 @@
   },
   "workspaces": [
     "packages/*",
-    "apps/*",
-    "libs/*"
+    "apps/*"
   ],
   "dependencies": {
     "@nestjs/common": "^11.1.6",
@@ -42,6 +41,7 @@
     "@nestjs/core": "^11.1.6",
     "@nestjs/microservices": "^11.1.6",
     "@nestjs/platform-express": "^11.1.6",
+    "@rolandsall24/nest-mediator": "^0.4.2",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.6",
     "pg": "^8.16.3",

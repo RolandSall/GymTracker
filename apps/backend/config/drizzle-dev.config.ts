@@ -1,12 +1,11 @@
 import { defineConfig } from 'drizzle-kit';
 import * as dotenv from 'dotenv';
-import { resolve, join } from 'path';
+import { resolve } from 'path';
 
-dotenv.config({ path: resolve(__dirname, '../../../.env') });
-
+dotenv.config({ path: resolve(__dirname, '../../../.env'), override: true });
 export default defineConfig({
-  schema: join(__dirname, '../category-management/src/infrastructure/persistence/index.ts'),
-  out: join(__dirname, '../resources/migrations'),
+  schema: './apps/backend/category-management/src/infrastructure/persistence/index.ts',
+  out: './apps/backend/resources/migrations',
   dialect: 'postgresql',
   dbCredentials: {
     url:

@@ -1,6 +1,14 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as dotenv from 'dotenv';
+import { resolve } from 'path';
+
+const environment = process.env.NODE_ENV || 'development';
+const envFile = environment === 'production' ? '.env.production' : '.env.local';
+dotenv.config({ path: resolve(process.cwd(), envFile), override: true });
+dotenv.config({ path: resolve(process.cwd(), '.env') });
+console.log('Environment:', environment);
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

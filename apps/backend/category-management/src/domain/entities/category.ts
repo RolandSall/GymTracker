@@ -19,4 +19,13 @@ export class Category {
       now
     );
   }
+
+  rename(newName: string): Category {
+    return new Category(
+      this.id,
+      newName,
+      this.description,
+      this.createdAt
+    );
+  }
 }

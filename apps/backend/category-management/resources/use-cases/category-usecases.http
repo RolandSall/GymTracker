@@ -13,3 +13,8 @@ Content-Type: application/json
 GET http://localhost:3000/api/categories/8b78e38e-351d-4e16-9cdd-eb853fa80838
 
 ###
+
+As a user I cant create a category with the same name
+As a user I cant create an exercice with the same name
+
+add e2e BDD functional tests, and handle the logic of unqieuss on application layer

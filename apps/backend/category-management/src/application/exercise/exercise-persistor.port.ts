@@ -2,8 +2,7 @@ import { Exercise } from '../../domain/entities';
 
 export interface ExercisePersistor {
   save(exercise: Exercise): Promise<Exercise>;
-  findById(id: string): Promise<Exercise | null>;
-  findByCategoryId(categoryId: string): Promise<Exercise[]>;
+  update(exercise: Exercise): Promise<Exercise>;
   delete(id: string): Promise<void>;
 }
 

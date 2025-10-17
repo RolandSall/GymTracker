@@ -6,9 +6,10 @@ import { Exercise } from '../../../domain/entities';
 import { EquipmentType, Target, MuscleGroupType } from '../../../domain/value-objects';
 import { DrizzleClient } from '../drizzle-client.service';
 import { exercises, exerciseTargets } from './exercise.entity';
+import {ExerciseFetcher} from "../../../application/exercise/exercise-fetcher.port";
 
 @Injectable()
-export class ExercisePersistenceAdapter implements ExercisePersistor {
+export class ExercisePersistenceAdapter implements ExercisePersistor, ExerciseFetcher {
   constructor(private readonly drizzleClient: DrizzleClient) {}
 
   async save(exercise: Exercise): Promise<Exercise> {
@@ -96,6 +97,39 @@ export class ExercisePersistenceAdapter implements ExercisePersistor {
     );
 
     return exerciseResults.filter((ex) => ex !== null) as Exercise[];
+  }
+
+  async update(exercise: Exercise): Promise<Exercise> {
+    return await this.drizzleClient.db.transaction(async (tx) => {
+      const result = await tx
+        .update(exercises)
+        .set({
+          name: exercise.name,
+          description: exercise.description,
+        })
+        .where(eq(exercises.id, exercise.id))
+        .returning();
+
+      const updated = result[0];
+      return new Exercise(
+        updated.id,
+        updated.name,
+        updated.description,
+        updated.equipmentType as EquipmentType,
+        exercise.targets,
+        updated.createdAt
+      );
+    });
+  }
+
+  async countByCategoryId(categoryId: string): Promise<number> {
+    const result = await this.drizzleClient.db
+      .select()
+      .from(exerciseTargets)
+      .where(eq(exerciseTargets.categoryId, categoryId));
+
+    const uniqueExerciseIds = [...new Set(result.map((r) => r.exerciseId))];
+    return uniqueExerciseIds.length;
   }
 
   async delete(id: string): Promise<void> {

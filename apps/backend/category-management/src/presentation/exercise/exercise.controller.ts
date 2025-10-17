@@ -1,10 +1,13 @@
-import { Controller, Post, Get, Delete, Body, Param, HttpCode, HttpStatus, UseFilters } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Patch, Body, Param, HttpCode, HttpStatus, UseFilters } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { MediatorBus } from '@rolandsall24/nest-mediator';
 import { AddExerciseCommand } from '../../application/exercise/add-exercise.command';
+import { RenameExerciseCommand } from '../../application/exercise/rename-exercise.command';
 import { GetExercisesByCategoryQuery } from '../../application/exercise/get-exercises-by-category.query';
+import { GetExerciseQuery } from '../../application/exercise/get-exercise.query';
 import { DeleteExerciseCommand } from '../../application/exercise/delete-exercise.command';
 import { AddExerciseApiRequest } from './add-exercise-api.request';
+import { RenameExerciseApiRequest } from './rename-exercise-api.request';
 import { ExerciseApiResponse } from './exercise-api.response';
 import { EquipmentType } from '../../domain/value-objects';
 import { InvalidExerciseExceptionFilter } from './invalid-exercise-exception.filter';
@@ -79,6 +82,49 @@ export class ExerciseController {
       })),
       createdAt: exercise.createdAt,
     }));
+  }
+
+  @Patch(':id')
+  @ApiOperation({
+    summary: 'Rename an exercise',
+    description: 'Updates the name of an existing exercise',
+  })
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    description: 'The ID of the exercise to rename',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Exercise renamed successfully.',
+    type: ExerciseApiResponse,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Exercise not found.',
+  })
+  async rename(
+    @Param('id') id: string,
+    @Body() request: RenameExerciseApiRequest
+  ): Promise<ExerciseApiResponse> {
+    const command = new RenameExerciseCommand(id, request.name);
+    await this.mediator.send(command);
+
+    const query = new GetExerciseQuery(id);
+    const exercise: Exercise = await this.mediator.query(query);
+
+    return {
+      id: exercise.id,
+      name: exercise.name,
+      description: exercise.description,
+      equipmentType: exercise.equipmentType,
+      targets: exercise.targets.map((target) => ({
+        categoryId: target.categoryId,
+        type: target.type,
+      })),
+      createdAt: exercise.createdAt,
+    };
   }
 
   @Delete(':id')

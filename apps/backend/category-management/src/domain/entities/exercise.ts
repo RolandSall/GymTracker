@@ -27,4 +27,15 @@ export class Exercise {
       now
     );
   }
+
+  rename(newName: string): Exercise {
+    return new Exercise(
+      this.id,
+      newName,
+      this.description,
+      this.equipmentType,
+      this.targets,
+      this.createdAt
+    );
+  }
 }

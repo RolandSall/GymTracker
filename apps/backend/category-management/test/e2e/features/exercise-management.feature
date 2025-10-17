@@ -33,3 +33,29 @@ Feature: Exercise Management
     When the user fetches all available categories
     Then the user should see 3 categories
     And all categories should have the correct details
+
+  Scenario: Rename a category
+    Given that a category with name "Chest" exists
+    When the user renames the category "Chest" to "Pectorals"
+    Then the category should be renamed successfully
+    And the category name should be "Pectorals"
+
+  Scenario: Rename an exercise
+    Given that a category with name "Chest" exists
+    And the user created a "Bench Press" exercise with equipment "Barbell" targeting "Chest" as primary
+    When the user renames the exercise "Bench Press" to "Barbell Bench Press"
+    Then the exercise should be renamed successfully
+    And the exercise name should be "Barbell Bench Press"
+
+  Scenario: Delete a category with no exercises
+    Given that a category with name "Shoulders" exists
+    When the user attempts to delete the category "Shoulders"
+    Then the category should be deleted successfully
+    And the category should no longer exist in the system
+
+  Scenario: Attempt to delete a category with linked exercises
+    Given that a category with name "Chest" exists
+    And the user created a "Bench Press" exercise with equipment "Barbell" targeting "Chest" as primary
+    When the user attempts to delete the category "Chest"
+    Then the deletion should fail with a message indicating exercises must be deleted first
+    And the category should still exist in the system

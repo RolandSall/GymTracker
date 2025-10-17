@@ -1,15 +1,20 @@
-import { Controller, Post, Body, Get, Param, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Patch, Delete, HttpCode, HttpStatus, UseFilters } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { MediatorBus } from '@rolandsall24/nest-mediator';
 import { AddCategoryCommand } from '../../application/category/add-category.command';
+import { RenameCategoryCommand } from '../../application/category/rename-category.command';
+import { DeleteCategoryCommand } from '../../application/category/delete-category.command';
 import { GetCategoryQuery } from '../../application/category/get-category.query';
 import { GetAllCategoriesQuery } from '../../application/category/get-all-categories.query';
 import { AddCategoryApiRequest } from './add-category-api.request';
+import { RenameCategoryApiRequest } from './rename-category-api.request';
 import { CategoryApiResponse } from './category-api.response';
+import { CategoryHasExercisesExceptionFilter } from './category-has-exercises-exception.filter';
 import {Category} from "../../domain/entities";
 
 @ApiTags('categories')
 @Controller('categories')
+@UseFilters(CategoryHasExercisesExceptionFilter)
 export class CategoryController {
   constructor(private readonly mediator: MediatorBus) {}
 
@@ -88,5 +93,72 @@ export class CategoryController {
       description: category.description,
       createdAt: category.createdAt,
     };
+  }
+
+  @Patch(':id')
+  @ApiOperation({
+    summary: 'Rename a category',
+    description: 'Updates the name of an existing muscle group category',
+  })
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    description: 'The ID of the category to rename',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Category renamed successfully.',
+    type: CategoryApiResponse,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Category not found.',
+  })
+  async rename(
+    @Param('id') id: string,
+    @Body() request: RenameCategoryApiRequest
+  ): Promise<CategoryApiResponse> {
+    const command = new RenameCategoryCommand(id, request.name);
+    await this.mediator.send(command);
+
+    const query = new GetCategoryQuery(id);
+    const category: Category = await this.mediator.query(query);
+
+    return {
+      id: category.id,
+      name: category.name,
+      description: category.description,
+      createdAt: category.createdAt,
+    };
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Delete a category',
+    description: 'Deletes a muscle group category. The category must not have any linked exercises.',
+  })
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    description: 'The ID of the category to delete',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @ApiResponse({
+    status: 204,
+    description: 'Category deleted successfully.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Category has linked exercises. Delete exercises first.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Category not found.',
+  })
+  async delete(@Param('id') id: string): Promise<void> {
+    const command = new DeleteCategoryCommand(id);
+    await this.mediator.send(command);
   }
 }

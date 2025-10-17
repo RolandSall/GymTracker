@@ -294,3 +294,130 @@ Then('all categories should have the correct details', function (this: CategoryW
     expect(category.createdAt).to.exist;
   }
 });
+
+
+// Rename category steps
+When('the user renames the category {string} to {string}', async function (this: CategoryWorld, oldName: string, newName: string) {
+  const apiClient = getApiClient();
+
+  expect(this.categoriesByName.has(oldName)).to.be.true;
+  const category = this.categoriesByName.get(oldName);
+
+  this.response = await apiClient.patch(`/categories/${category!.id}`, {
+    name: newName,
+  });
+});
+
+Then('the category should be renamed successfully', function (this: CategoryWorld) {
+  expect(this.response).to.exist;
+  expect(this.response!.status).to.equal(200, 'Category should be renamed successfully');
+});
+
+Then('the category name should be {string}', async function (this: CategoryWorld, expectedName: string) {
+  const db = getDb();
+  const apiClient = getApiClient();
+
+  // Get the category ID from the response or stored data
+  const categoryId = this.response?.data?.id || Array.from(this.categoriesByName.values())[0].id;
+
+  const result = await db
+    .select()
+    .from(categories)
+    .where(eq(categories.id, categoryId))
+    .limit(1);
+
+  expect(result).to.have.lengthOf(1, 'Category should exist in database');
+  expect(result[0].name).to.equal(expectedName, 'Category name should be updated');
+});
+
+
+// Rename exercise steps
+When('the user renames the exercise {string} to {string}', async function (this: CategoryWorld, oldName: string, newName: string) {
+  const apiClient = getApiClient();
+  const db = getDb();
+
+  const result = await db
+    .select()
+    .from(exercises)
+    .where(eq(exercises.name, oldName))
+    .limit(1);
+
+  expect(result).to.have.lengthOf(1, `Exercise "${oldName}" should exist`);
+  const exerciseId = result[0].id;
+
+  this.response = await apiClient.patch(`/exercises/${exerciseId}`, {
+    name: newName,
+  });
+});
+
+Then('the exercise should be renamed successfully', function (this: CategoryWorld) {
+  expect(this.response).to.exist;
+  expect(this.response!.status).to.equal(200, 'Exercise should be renamed successfully');
+});
+
+Then('the exercise name should be {string}', async function (this: CategoryWorld, expectedName: string) {
+  const db = getDb();
+
+  const exerciseId = this.response?.data?.id;
+  expect(exerciseId).to.exist;
+
+  const result = await db
+    .select()
+    .from(exercises)
+    .where(eq(exercises.id, exerciseId))
+    .limit(1);
+
+  expect(result).to.have.lengthOf(1, 'Exercise should exist in database');
+  expect(result[0].name).to.equal(expectedName, 'Exercise name should be updated');
+});
+
+
+// Delete category steps
+When('the user attempts to delete the category {string}', async function (this: CategoryWorld, categoryName: string) {
+  const apiClient = getApiClient();
+
+  expect(this.categoriesByName.has(categoryName)).to.be.true;
+  const category = this.categoriesByName.get(categoryName);
+
+  this.response = await apiClient.delete(`/categories/${category!.id}`);
+});
+
+Then('the category should be deleted successfully', function (this: CategoryWorld) {
+  expect(this.response).to.exist;
+  expect(this.response!.status).to.equal(204, 'Category should be deleted successfully');
+});
+
+Then('the category should no longer exist in the system', async function (this: CategoryWorld) {
+  const db = getDb();
+
+  const categoryId = Array.from(this.categoriesByName.values())[0].id;
+
+  const result = await db
+    .select()
+    .from(categories)
+    .where(eq(categories.id, categoryId))
+    .limit(1);
+
+  expect(result).to.have.lengthOf(0, 'Category should be deleted from database');
+});
+
+Then('the deletion should fail with a message indicating exercises must be deleted first', function (this: CategoryWorld) {
+  expect(this.response).to.exist;
+  expect(this.response!.status).to.equal(400, 'Deletion should fail with bad request');
+  expect(this.response!.data).to.have.property('message');
+  expect(this.response!.data.message).to.include('exercises');
+});
+
+Then('the category should still exist in the system', async function (this: CategoryWorld) {
+  const db = getDb();
+
+  const categoryId = Array.from(this.categoriesByName.values())[0].id;
+
+  const result = await db
+    .select()
+    .from(categories)
+    .where(eq(categories.id, categoryId))
+    .limit(1);
+
+  expect(result).to.have.lengthOf(1, 'Category should still exist in database');
+});

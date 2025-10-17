@@ -10,18 +10,23 @@ import { CategoryPersistenceAdapter } from './category-management/src/infrastruc
 import { CategoryNotFoundExceptionFilter } from './category-management/src/presentation/filters/category-not-found-exception.filter';
 import { DrizzleClient } from './category-management/src/infrastructure/persistence/drizzle-client.service';
 import databaseConfig from './config/database.config';
+import {CATEGORY_FETCHER} from "./category-management/src/application/category/category-fetcher.port";
 
 @Module({
+  controllers: [CategoryController],
   imports: [
     ConfigModule.forFeature(databaseConfig),
     NestMediatorModule.forRoot(),
   ],
-  controllers: [CategoryController],
   providers: [
     DrizzleClient,
     {
       provide: CATEGORY_PERSISTOR,
       useClass: CategoryPersistenceAdapter,
+    },
+    {
+      provide: CATEGORY_FETCHER,
+      useExisting: CATEGORY_PERSISTOR,
     },
     {
       provide: APP_FILTER,

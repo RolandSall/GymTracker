@@ -71,6 +71,7 @@ credentials.json
 # Testing
 .nyc_output/
 junit.xml
+**/test/e2e/reports/
 
 # Temporary files
 temp/

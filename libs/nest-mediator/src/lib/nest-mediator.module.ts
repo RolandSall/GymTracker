@@ -1,76 +1,82 @@
-import { DynamicModule, Module, Type, OnModuleInit, Inject } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { MediatorService } from './services/index.js';
+import { DynamicModule, Module, Type, OnModuleInit } from '@nestjs/common';
+import { Reflector, DiscoveryService, DiscoveryModule } from '@nestjs/core';
+import { MediatorBus } from './services/index.js';
 import { COMMAND_HANDLER_METADATA, QUERY_HANDLER_METADATA } from './decorators/index.js';
 import { ICommand, ICommandHandler, IQuery, IQueryHandler } from './interfaces/index.js';
 
-export interface NestMediatorModuleOptions {
-  handlers?: Type<ICommandHandler<any> | IQueryHandler<any, any>>[];
-}
 
 @Module({})
 export class NestMediatorModule implements OnModuleInit {
   constructor(
-      private readonly mediatorService: MediatorService,
+      private readonly mediatorBus: MediatorBus,
       private readonly reflector: Reflector,
-      @Inject('HANDLERS_CONFIG')
-      private readonly handlers: Type<ICommandHandler<any> | IQueryHandler<any, any>>[]
+      private readonly discoveryService: DiscoveryService,
   ) {}
 
-  onModuleInit() {
-    console.log(`[NestMediator] Registering ${this.handlers.length} handlers...`);
+  async onModuleInit() {
+    const providers = this.discoveryService.getProviders();
 
-    this.handlers.forEach((handlerType) => {
+    for (const wrapper of providers) {
+      if (!wrapper.metatype || !wrapper.instance) {
+        continue;
+      }
+
+      const isFunction = typeof wrapper.metatype === 'function';
+      const isConstructor = isFunction && wrapper.metatype.prototype !== undefined;
+
+      if (!isConstructor) {
+        continue;
+      }
+
+      const handlerType = wrapper.metatype as Type;
+
       const commandMetadata = this.reflector.get<Type<ICommand>>(
-          COMMAND_HANDLER_METADATA,
-          handlerType
+        COMMAND_HANDLER_METADATA,
+        handlerType
       );
 
       if (commandMetadata) {
         console.log(
             `[NestMediator] Registering command handler: ${handlerType.name} for command: ${commandMetadata.name}`
         );
-        this.mediatorService.registerCommandHandler(
+        this.mediatorBus.registerCommandHandler(
             commandMetadata,
             handlerType as Type<ICommandHandler<any>>
         );
       }
 
       const queryMetadata = this.reflector.get<Type<IQuery>>(
-          QUERY_HANDLER_METADATA,
-          handlerType
+        QUERY_HANDLER_METADATA,
+        handlerType
       );
 
       if (queryMetadata) {
         console.log(
             `[NestMediator] Registering query handler: ${handlerType.name} for query: ${queryMetadata.name}`
         );
-        this.mediatorService.registerQueryHandler(
+        this.mediatorBus.registerQueryHandler(
             queryMetadata,
             handlerType as Type<IQueryHandler<any, any>>
         );
       }
-    });
+    }
   }
 
   /**
-   * Register the NestMediator module with handlers
-   * @param options - Module options containing handlers to register
+   * Register the NestMediator module
+   * Handlers are automatically discovered from the application's providers
    * @returns Dynamic module
    */
-  static forRoot(options: NestMediatorModuleOptions = {}): DynamicModule {
-    const handlers = options.handlers || [];
-
+  static forRoot(): DynamicModule {
     return {
       module: NestMediatorModule,
-      providers: [
-        MediatorService,
-        {
-          provide: 'HANDLERS_CONFIG',
-          useValue: handlers,
-        },
+      imports: [
+        DiscoveryModule,
       ],
-      exports: [MediatorService],
+      providers: [
+        MediatorBus,
+      ],
+      exports: [MediatorBus],
       global: true,
     };
   }

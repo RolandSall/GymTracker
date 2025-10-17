@@ -14,12 +14,7 @@ import databaseConfig from './config/database.config';
 @Module({
   imports: [
     ConfigModule.forFeature(databaseConfig),
-    NestMediatorModule.forRoot({
-      handlers: [
-        AddCategoryCommandHandler,
-        GetCategoryQueryHandler,
-      ],
-    }),
+    NestMediatorModule.forRoot(),
   ],
   controllers: [CategoryController],
   providers: [

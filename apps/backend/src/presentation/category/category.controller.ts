@@ -1,5 +1,5 @@
 import { Controller, Post, Body, Get, Param } from '@nestjs/common';
-import { MediatorService } from '@gym-tracker/nest-mediator';
+import { MediatorBus } from '@gym-tracker/nest-mediator';
 import { AddCategoryCommand } from '../../application/category/add-category.command';
 import { GetCategoryQuery } from '../../application/category/get-category.query';
 import { AddCategoryApiRequest } from './add-category-api.request';
@@ -7,7 +7,7 @@ import { CategoryApiResponse } from './category-api.response';
 
 @Controller('categories')
 export class CategoryController {
-  constructor(private readonly mediator: MediatorService) {}
+  constructor(private readonly mediator: MediatorBus) {}
 
   @Post()
   async create(@Body() request: AddCategoryApiRequest): Promise<void> {

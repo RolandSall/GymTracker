@@ -3,7 +3,7 @@ import { ModuleRef } from '@nestjs/core';
 import { ICommand, ICommandHandler, IQuery, IQueryHandler } from '../interfaces/index.js';
 
 @Injectable()
-export class MediatorService {
+export class MediatorBus {
   private commandHandlers = new Map<string, Type<ICommandHandler<any>>>();
   private queryHandlers = new Map<string, Type<IQueryHandler<any, any>>>();
 

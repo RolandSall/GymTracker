@@ -21,7 +21,7 @@ npm install @rolandsall24/nest-mediator
 
 ### 1. Import the Module
 
-Import `NestMediatorModule` in your application module and register your handlers:
+Import `NestMediatorModule` in your application module:
 
 ```typescript
 import { Module } from '@nestjs/common';
@@ -31,16 +31,11 @@ import { GetUserQueryHandler } from './handlers/get-user-query.handler';
 
 @Module({
   imports: [
-    NestMediatorModule.forRoot({
-      handlers: [
-        CreateUserCommandHandler,
-        GetUserQueryHandler,
-      ],
-    }),
+    NestMediatorModule.forRoot(),
   ],
   providers: [
-    // IMPORTANT: You must also add handlers to the providers array
-    // so NestJS can inject their dependencies
+    // Add your handlers to the providers array
+    // They will be automatically discovered by the mediator
     CreateUserCommandHandler,
     GetUserQueryHandler,
   ],
@@ -48,9 +43,7 @@ import { GetUserQueryHandler } from './handlers/get-user-query.handler';
 export class AppModule {}
 ```
 
-**Important Note**: Handlers must be registered in **two places**:
-1. In `NestMediatorModule.forRoot()` - for mediator pattern registration
-2. In the module's `providers` array - for NestJS dependency injection
+**How it works**: The module uses NestJS's `DiscoveryService` to automatically discover and register all providers decorated with `@CommandHandler` or `@QueryHandler`. Simply add your handlers to the module's `providers` array and they will be automatically registered with the mediator!
 
 ## Usage
 
@@ -105,12 +98,12 @@ export class CreateUserCommandHandler implements ICommandHandler<CreateUserComma
 
 ```typescript
 import { Controller, Post, Body } from '@nestjs/common';
-import { MediatorService } from '@rolandsall24/nest-mediator';
+import { MediatorBus } from '@rolandsall24/nest-mediator';
 import { CreateUserCommand } from './commands/create-user.command';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly mediator: MediatorService) {}
+  constructor(private readonly mediator: MediatorBus) {}
 
   @Post()
   async create(@Body() body: { email: string; name: string; age: number }): Promise<void> {
@@ -190,13 +183,13 @@ export class GetUserByIdQueryHandler implements IQueryHandler<GetUserByIdQuery, 
 
 ```typescript
 import { Controller, Get, Param } from '@nestjs/common';
-import { MediatorService } from '@rolandsall24/nest-mediator';
+import { MediatorBus } from '@rolandsall24/nest-mediator';
 import { GetUserByIdQuery } from './queries/get-user-by-id.query';
 import { UserDto } from './dtos/user.dto';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly mediator: MediatorService) {}
+  constructor(private readonly mediator: MediatorBus) {}
 
   @Get(':id')
   async getById(@Param('id') id: string): Promise<UserDto> {
@@ -452,7 +445,7 @@ export class UserApiResponse {
 
 ```typescript
 import { Controller, Post, Body, Get, Param } from '@nestjs/common';
-import { MediatorService } from '@rolandsall24/nest-mediator';
+import { MediatorBus } from '@rolandsall24/nest-mediator';
 import { CreateUserCommand } from '../../application/user/create-user.command';
 import { GetUserQuery } from '../../application/user/get-user.query';
 import { CreateUserApiRequest } from './create-user-api.request';
@@ -460,7 +453,7 @@ import { UserApiResponse } from './user-api.response';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly mediator: MediatorService) {}
+  constructor(private readonly mediator: MediatorBus) {}
 
   @Post()
   async create(@Body() request: CreateUserApiRequest): Promise<void> {
@@ -504,12 +497,7 @@ import { UserPersistenceAdapter } from './infrastructure/persistence/user/user-p
 
 @Module({
   imports: [
-    NestMediatorModule.forRoot({
-      handlers: [
-        CreateUserCommandHandler,
-        GetUserQueryHandler,
-      ],
-    }),
+    NestMediatorModule.forRoot(),
   ],
   controllers: [UserController],
   providers: [
@@ -518,7 +506,7 @@ import { UserPersistenceAdapter } from './infrastructure/persistence/user/user-p
       provide: USER_PERSISTOR,
       useClass: UserPersistenceAdapter,
     },
-    // IMPORTANT: Handlers must also be added here for dependency injection
+    // Handlers - automatically discovered and registered by the mediator
     CreateUserCommandHandler,
     GetUserQueryHandler,
   ],
@@ -610,7 +598,7 @@ Marks a class as a query handler.
 
 ### Services
 
-#### `MediatorService`
+#### `MediatorBus`
 
 The main service for sending commands and queries.
 

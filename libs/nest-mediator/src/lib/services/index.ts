@@ -1,1 +1,1 @@
-export * from './mediator.service.js';
+export * from './mediator.bus.js';

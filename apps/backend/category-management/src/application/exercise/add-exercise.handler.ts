@@ -5,18 +5,27 @@ import { AddExerciseCommand } from './add-exercise.command';
 import { Exercise } from '../../domain/entities';
 import { Target } from '../../domain/value-objects';
 import { MuscleGroupType } from '../../domain/value-objects';
-import { InvalidExerciseException } from '../../domain/exceptions/invalid-exercise.exception';
+import { InvalidExerciseException, ExerciseAlreadyExistsException } from '../../domain/exceptions';
 import { ExercisePersistor, EXERCISE_PERSISTOR } from './exercise-persistor.port';
+import { ExerciseFetcher, EXERCISE_FETCHER } from './exercise-fetcher.port';
 
 @Injectable()
 @CommandHandler(AddExerciseCommand)
 export class AddExerciseCommandHandler implements ICommandHandler<AddExerciseCommand> {
   constructor(
     @Inject(EXERCISE_PERSISTOR)
-    private readonly exercisePersistor: ExercisePersistor
+    private readonly exercisePersistor: ExercisePersistor,
+    @Inject(EXERCISE_FETCHER)
+    private readonly exerciseFetcher: ExerciseFetcher
   ) {}
 
   async execute(command: AddExerciseCommand): Promise<void> {
+    const exists = await this.exerciseFetcher.existsByName(command.name);
+
+    if (exists) {
+      throw new ExerciseAlreadyExistsException(command.name);
+    }
+
     const id = randomUUID();
 
     const targets = command.targets.map((target) =>

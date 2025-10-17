@@ -81,4 +81,14 @@ export class CategoryPersistenceAdapter implements CategoryPersistor, CategoryFe
   async delete(id: string): Promise<void> {
     await this.drizzleClient.db.delete(categories).where(eq(categories.id, id));
   }
+
+  async existsByName(name: string): Promise<boolean> {
+    const result = await this.drizzleClient.db
+      .select()
+      .from(categories)
+      .where(eq(categories.name, name))
+      .limit(1);
+
+    return result.length > 0;
+  }
 }

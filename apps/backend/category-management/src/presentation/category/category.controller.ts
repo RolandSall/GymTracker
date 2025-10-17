@@ -10,11 +10,12 @@ import { AddCategoryApiRequest } from './add-category-api.request';
 import { RenameCategoryApiRequest } from './rename-category-api.request';
 import { CategoryApiResponse } from './category-api.response';
 import { CategoryHasExercisesExceptionFilter } from './category-has-exercises-exception.filter';
+import { CategoryAlreadyExistsExceptionFilter } from './category-already-exists-exception.filter';
 import {Category} from "../../domain/entities";
 
 @ApiTags('categories')
 @Controller('categories')
-@UseFilters(CategoryHasExercisesExceptionFilter)
+@UseFilters(CategoryHasExercisesExceptionFilter, CategoryAlreadyExistsExceptionFilter)
 export class CategoryController {
   constructor(private readonly mediator: MediatorBus) {}
 

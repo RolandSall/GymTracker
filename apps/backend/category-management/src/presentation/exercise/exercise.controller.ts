@@ -12,11 +12,12 @@ import { ExerciseApiResponse } from './exercise-api.response';
 import { EquipmentType } from '../../domain/value-objects';
 import { InvalidExerciseExceptionFilter } from './invalid-exercise-exception.filter';
 import { ExerciseNotFoundExceptionFilter } from './exercise-not-found-exception.filter';
+import { ExerciseAlreadyExistsExceptionFilter } from './exercise-already-exists-exception.filter';
 import {Exercise} from "../../domain/entities";
 
 @ApiTags('exercises')
 @Controller('exercises')
-@UseFilters(InvalidExerciseExceptionFilter, ExerciseNotFoundExceptionFilter)
+@UseFilters(InvalidExerciseExceptionFilter, ExerciseNotFoundExceptionFilter, ExerciseAlreadyExistsExceptionFilter)
 export class ExerciseController {
   constructor(private readonly mediator: MediatorBus) {}
 

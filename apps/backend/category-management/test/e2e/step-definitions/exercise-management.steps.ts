@@ -421,3 +421,54 @@ Then('the category should still exist in the system', async function (this: Cate
 
   expect(result).to.have.lengthOf(1, 'Category should still exist in database');
 });
+
+
+// Uniqueness validation steps
+When('the user attempts to create another category with name {string}', async function (this: CategoryWorld, categoryName: string) {
+  const apiClient = getApiClient();
+
+  this.response = await apiClient.post('/categories', {
+    name: categoryName,
+    description: 'Duplicate category description',
+  });
+});
+
+Then('the category creation should fail with a conflict error', function (this: CategoryWorld) {
+  expect(this.response).to.exist;
+  expect(this.response!.status).to.equal(409, 'Category creation should fail with conflict status');
+});
+
+Then('the error message should indicate that the category name already exists', function (this: CategoryWorld) {
+  expect(this.response).to.exist;
+  expect(this.response!.data).to.have.property('message');
+  expect(this.response!.data.message).to.include('already exists');
+});
+
+When('the user attempts to create another exercise with name {string}', async function (this: CategoryWorld, exerciseName: string) {
+  const apiClient = getApiClient();
+
+  const primaryCategory = Array.from(this.categoriesByName.values())[0];
+
+  this.response = await apiClient.post('/exercises', {
+    name: exerciseName,
+    description: 'Duplicate exercise description',
+    equipmentType: 'Dumbbell',
+    targets: [
+      {
+        categoryId: primaryCategory.id,
+        type: 'Primary',
+      },
+    ],
+  });
+});
+
+Then('the exercise creation should fail with a conflict error', function (this: CategoryWorld) {
+  expect(this.response).to.exist;
+  expect(this.response!.status).to.equal(409, 'Exercise creation should fail with conflict status');
+});
+
+Then('the error message should indicate that the exercise name already exists', function (this: CategoryWorld) {
+  expect(this.response).to.exist;
+  expect(this.response!.data).to.have.property('message');
+  expect(this.response!.data.message).to.include('already exists');
+});

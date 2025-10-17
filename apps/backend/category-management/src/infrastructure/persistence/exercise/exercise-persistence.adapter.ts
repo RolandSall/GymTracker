@@ -135,4 +135,14 @@ export class ExercisePersistenceAdapter implements ExercisePersistor, ExerciseFe
   async delete(id: string): Promise<void> {
     await this.drizzleClient.db.delete(exercises).where(eq(exercises.id, id));
   }
+
+  async existsByName(name: string): Promise<boolean> {
+    const result = await this.drizzleClient.db
+      .select()
+      .from(exercises)
+      .where(eq(exercises.name, name))
+      .limit(1);
+
+    return result.length > 0;
+  }
 }

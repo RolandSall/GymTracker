@@ -59,3 +59,16 @@ Feature: Exercise Management
     When the user attempts to delete the category "Chest"
     Then the deletion should fail with a message indicating exercises must be deleted first
     And the category should still exist in the system
+
+  Scenario: Attempt to create a category with duplicate name
+    Given that a category with name "Chest" exists
+    When the user attempts to create another category with name "Chest"
+    Then the category creation should fail with a conflict error
+    And the error message should indicate that the category name already exists
+
+  Scenario: Attempt to create an exercise with duplicate name
+    Given that a category with name "Chest" exists
+    And the user created a "Bench Press" exercise with equipment "Barbell" targeting "Chest" as primary
+    When the user attempts to create another exercise with name "Bench Press"
+    Then the exercise creation should fail with a conflict error
+    And the error message should indicate that the exercise name already exists

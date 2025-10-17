@@ -1,5 +1,5 @@
 import { Controller, Post, Body, Get, Param } from '@nestjs/common';
-import { MediatorBus } from '@gym-tracker/nest-mediator';
+import { MediatorBus } from '@rolandsall24/nest-mediator';
 import { AddCategoryCommand } from '../../application/category/add-category.command';
 import { GetCategoryQuery } from '../../application/category/get-category.query';
 import { AddCategoryApiRequest } from './add-category-api.request';

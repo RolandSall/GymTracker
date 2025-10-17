@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
-import { NestMediatorModule } from '@gym-tracker/nest-mediator';
+import { NestMediatorModule } from '@rolandsall24/nest-mediator';
 import { CategoryController } from './presentation/category/category.controller';
 import { AddCategoryCommandHandler } from './application/category/add-category.handler';
 import { GetCategoryQueryHandler } from './application/category/get-category.handler';

@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { CommandHandler, ICommandHandler } from '@gym-tracker/nest-mediator';
+import { CommandHandler, ICommandHandler } from '@rolandsall24/nest-mediator';
 import { randomUUID } from 'crypto';
 import { AddCategoryCommand } from './add-category.command';
 import { Category } from '../../domain/entities';

@@ -3,7 +3,8 @@ import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import * as schema from '../../../src/infrastructure/persistence/index';
-import { categories } from '../../../src/infrastructure/persistence/category/category.entity';
+import { categories } from '../../../src/infrastructure/persistence';
+import { exercises, exerciseTargets } from '../../../src/infrastructure/persistence';
 import axios, { AxiosInstance } from 'axios';
 import { spawn, ChildProcess } from 'child_process';
 import { join, resolve } from 'path';
@@ -123,6 +124,8 @@ AfterAll(async function () {
 
 Before(async function () {
   if (db) {
+    await db.delete(exerciseTargets);
+    await db.delete(exercises);
     await db.delete(categories);
   }
 });

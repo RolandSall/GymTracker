@@ -5,53 +5,55 @@ import { getDb, getApiClient } from '../support/hooks';
 import { categories } from '../../../src/infrastructure/persistence';
 import { CategoryWorld } from '../support/world';
 
-Given('I have category data with name {string} and description {string}', function (this: CategoryWorld, name: string, description: string) {
-  this.categoryData = {
-    name,
-    description,
-  };
-});
+Given(
+  'the user wants to create a muscle group category for {string}',
+  function (this: CategoryWorld, categoryName: string) {
+    this.categoriesByName.set(categoryName, {
+      id: '', // Will be filled after creation
+      name: categoryName,
+      description: `Muscle group focusing on ${categoryName.toLowerCase()} development and strength`,
+    });
+  }
+);
 
-When('I create the category via the API', async function (this: CategoryWorld) {
+When('the category is created through the system', async function (this: CategoryWorld) {
   const apiClient = getApiClient();
 
-  this.response = await apiClient.post('/categories', this.categoryData);
+  const categoryEntry = Array.from(this.categoriesByName.entries())[0];
+  const [categoryName, categoryData] = categoryEntry;
 
-  if (this.response.headers.location) {
-    const locationParts = this.response.headers.location.split('/');
-    this.categoryId = locationParts[locationParts.length - 1];
+  const response = await apiClient.post('/categories', {
+    name: categoryData.name,
+    description: categoryData.description,
+  });
+
+  expect(response.status).to.equal(201, 'Category should be created successfully');
+});
+
+Then(
+  'the {string} category should be available for organizing exercises',
+  async function (this: CategoryWorld, categoryName: string) {
+    const db = getDb();
+
+    const result = await db
+      .select()
+      .from(categories)
+      .where(eq(categories.name, categoryName))
+      .limit(1);
+
+    expect(result).to.have.lengthOf(1, `Category "${categoryName}" should exist in database`);
+
+    const storedCategory = result[0];
+    const expectedCategory = this.categoriesByName.get(categoryName);
+
+    expect(storedCategory.name).to.equal(expectedCategory!.name);
+    expect(storedCategory.description).to.equal(expectedCategory!.description);
+    expect(storedCategory.createdAt).to.exist;
+    expect(storedCategory.id).to.exist;
+
+    this.categoriesByName.set(categoryName, {
+      ...expectedCategory!,
+      id: storedCategory.id,
+    });
   }
-});
-
-
-
-Then('the category should be stored in the database', async function (this: CategoryWorld) {
-  const db = getDb();
-
-  const result = await db
-    .select()
-    .from(categories)
-    .where(eq(categories.name, this.categoryData!.name))
-    .limit(1);
-
-  expect(result).to.have.lengthOf(1);
-
-  this.categoryId = result[0].id;
-});
-
-Then('the stored category should have the correct name and description', async function (this: CategoryWorld) {
-  const db = getDb();
-
-  expect(this.categoryId).to.exist;
-
-  const result = await db
-    .select()
-    .from(categories)
-    .where(eq(categories.id, this.categoryId!))
-    .limit(1);
-
-  expect(result).to.have.lengthOf(1);
-  expect(result[0].name).to.equal(this.categoryData!.name);
-  expect(result[0].description).to.equal(this.categoryData!.description);
-  expect(result[0].createdAt).to.exist;
-});
+);

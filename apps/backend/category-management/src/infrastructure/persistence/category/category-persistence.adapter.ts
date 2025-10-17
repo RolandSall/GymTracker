@@ -48,4 +48,13 @@ export class CategoryPersistenceAdapter implements CategoryPersistor {
       row.createdAt
     );
   }
+
+  async findAll(): Promise<Category[]> {
+    const result = await this.drizzleClient.db.select().from(categories);
+
+    return result.map(
+      (row) =>
+        new Category(row.id, row.name, row.description, row.createdAt)
+    );
+  }
 }

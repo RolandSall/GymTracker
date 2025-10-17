@@ -1,10 +1,9 @@
 Feature: Category Creation
   As a user
   I want to create a category
-  So that the category is available for me to use
+  So that the category is available for organizing my exercises
 
   Scenario: Successfully create a new category
-    Given I have category data with name "Chest" and description "Muscle Group"
-    When I create the category via the API
-    And the category should be stored in the database
-    And the stored category should have the correct name and description
+    Given the user wants to create a muscle group category for "Chest"
+    When the category is created through the system
+    Then the "Chest" category should be available for organizing exercises

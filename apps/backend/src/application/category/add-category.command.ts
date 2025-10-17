@@ -1,4 +1,4 @@
-import { ICommand } from '@gym-tracker/nest-mediator';
+import { ICommand } from '@rolandsall24/nest-mediator';
 
 export class AddCategoryCommand implements ICommand {
   constructor(

@@ -5,8 +5,8 @@ import { resolve, join } from 'path';
 dotenv.config({ path: resolve(__dirname, '../../../.env') });
 
 export default defineConfig({
-  schema: join(__dirname, '../infrastructure/persistence/index.ts'),
-  out: join(__dirname, '../../resources/migrations'),
+  schema: join(__dirname, '../category-management/src/infrastructure/persistence/index.ts'),
+  out: join(__dirname, '../resources/migrations'),
   dialect: 'postgresql',
   dbCredentials: {
     url:

@@ -7,7 +7,7 @@ import { AddCategoryCommandHandler } from './category-management/src/application
 import { GetCategoryQueryHandler } from './category-management/src/application/category/get-category.handler';
 import { CATEGORY_PERSISTOR } from './category-management/src/application/category/category-persistor.port';
 import { CategoryPersistenceAdapter } from './category-management/src/infrastructure/persistence/category/category-persistence.adapter';
-import { CategoryNotFoundExceptionFilter } from './category-management/src/presentation/filters/category-not-found-exception.filter';
+import { CategoryNotFoundExceptionFilter } from './category-management/src/presentation/category/category-not-found-exception.filter';
 import { DrizzleClient } from './category-management/src/infrastructure/persistence/drizzle-client.service';
 import databaseConfig from './config/database.config';
 import {CATEGORY_FETCHER} from "./category-management/src/application/category/category-fetcher.port";

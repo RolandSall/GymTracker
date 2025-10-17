@@ -13,7 +13,7 @@ export class NestMediatorModule implements OnModuleInit {
       private readonly discoveryService: DiscoveryService,
   ) {}
 
-  async onModuleInit() {
+  onModuleInit() {
     const providers = this.discoveryService.getProviders();
 
     for (const wrapper of providers) {

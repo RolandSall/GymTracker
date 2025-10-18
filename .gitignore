@@ -7,6 +7,10 @@ out-tsc
 build
 *.tsbuildinfo
 
+# Angular
+.angular/
+apps/frontend/.angular/
+
 # dependencies
 node_modules
 

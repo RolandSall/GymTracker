@@ -1,0 +1,38 @@
+<div class="container">
+  <div class="card">
+    <div class="header">
+      <h1 class="title">Gym Tracker</h1>
+      <p class="subtitle">Track your workouts, build your strength</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card purple">
+        <div class="stat-number">{{ exercises }}</div>
+        <div class="stat-label">Exercises</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-number">{{ categories }}</div>
+        <div class="stat-label">Categories</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-number">{{ workouts }}</div>
+        <div class="stat-label">Workouts</div>
+      </div>
+    </div>
+
+    <div class="info-section">
+      <h2 class="info-title">Welcome to Your Fitness Journey!</h2>
+      <p class="info-text">
+        This is a dummy frontend application built with Angular and vanilla CSS.
+        The backend API integration will be added in future iterations.
+      </p>
+      <div class="tags">
+        <span class="tag purple">Angular 20</span>
+        <span class="tag blue">Vanilla CSS</span>
+        <span class="tag green">Nx Monorepo</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<router-outlet />
